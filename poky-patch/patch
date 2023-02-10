@@ -1,0 +1,140 @@
+diff --git a/meta/classes-recipe/libc-package.bbclass b/meta/classes-recipe/libc-package.bbclass
+index 8a99f73ae7..bf160b115d 100644
+--- a/meta/classes-recipe/libc-package.bbclass
++++ b/meta/classes-recipe/libc-package.bbclass
+@@ -268,7 +268,8 @@ python package_do_split_gconvs () {
+                 "riscv32": " --uint32-align=4 --little-endian ", \
+                 "i586":    " --uint32-align=4 --little-endian ", \
+                 "i686":    " --uint32-align=4 --little-endian ", \
+-                "x86_64":  " --uint32-align=4 --little-endian "  }
++                "x86_64":  " --uint32-align=4 --little-endian ", \
++                "loongarch64": " --uint32-align=4 --little-endian "  }
+ 
+             if target_arch in locale_arch_options:
+                 localedef_opts = locale_arch_options[target_arch]
+diff --git a/meta/classes-recipe/meson-routines.bbclass b/meta/classes-recipe/meson-routines.bbclass
+index 6086fce9d9..a944a8fff1 100644
+--- a/meta/classes-recipe/meson-routines.bbclass
++++ b/meta/classes-recipe/meson-routines.bbclass
+@@ -23,6 +23,8 @@ def meson_cpu_family(var, d):
+         return 'arm'
+     elif arch == 'aarch64_be':
+         return 'aarch64'
++    elif arch == 'loongarch64':
++        return 'loongarch64'
+     elif arch == 'mipsel':
+         return 'mips'
+     elif arch == 'mips64el':
+diff --git a/meta/classes-recipe/rust-target-config.bbclass b/meta/classes-recipe/rust-target-config.bbclass
+index 5e71546fee..21a56ede3e 100644
+--- a/meta/classes-recipe/rust-target-config.bbclass
++++ b/meta/classes-recipe/rust-target-config.bbclass
+@@ -245,6 +245,14 @@ TARGET_POINTER_WIDTH[riscv64gc] = "64"
+ TARGET_C_INT_WIDTH[riscv64gc] = "64"
+ MAX_ATOMIC_WIDTH[riscv64gc] = "64"
+ 
++## loongarch64-unknown-linux-{gnu, musl}
++DATA_LAYOUT[loongarch64] = "e-m:e-i8:8:32-i16:16:32-i64:64-n32:64-S128"
++TARGET_ENDIAN[loongarch64] = "little"
++TARGET_POINTER_WIDTH[loongarch64] = "64"
++TARGET_C_INT_WIDTH[loongarch64] = "32"
++MAX_ATOMIC_WIDTH[loongarch64] = "64"
++FEATURES[loongarch64] = "+d"
++
+ # Convert a normal arch (HOST_ARCH, TARGET_ARCH, BUILD_ARCH, etc) to something
+ # rust's internals won't choke on.
+ def arch_to_rust_target_arch(arch):
+@@ -288,6 +296,7 @@ def llvm_cpu(d):
+     trans['mips64el'] = "mips64"
+     trans['riscv64'] = "generic-rv64"
+     trans['riscv32'] = "generic-rv32"
++    trans['loongarch64'] = "la464"
+ 
+     if target in ["mips", "mipsel", "powerpc"]:
+         feat = frozenset(d.getVar('TUNE_FEATURES').split())
+@@ -367,6 +376,8 @@ def rust_gen_target(d, thing, wd, arch):
+         tspec['llvm-abiname'] = "lp64d"
+     if "riscv32" in tspec['llvm-target']:
+         tspec['llvm-abiname'] = "ilp32d"
++    if "loongarch64" in tspec['llvm-target']:
++        tspec['llvm-abiname'] = "lp64d"
+     tspec['vendor'] = "unknown"
+     tspec['target-family'] = "unix"
+     tspec['linker'] = "{}{}gcc".format(d.getVar('CCACHE'), prefix)
+diff --git a/meta/conf/image-uefi.conf b/meta/conf/image-uefi.conf
+index 04a151f3a4..18351e7e3c 100644
+--- a/meta/conf/image-uefi.conf
++++ b/meta/conf/image-uefi.conf
+@@ -16,6 +16,7 @@ EFI_ARCH:aarch64 = "aa64"
+ EFI_ARCH:arm = "arm"
+ EFI_ARCH:riscv32 = "riscv32"
+ EFI_ARCH:riscv64 = "riscv64"
++EFI_ARCH:loongarch64 = "loongarch64"
+ 
+ # Determine name of bootloader image
+ EFI_BOOT_IMAGE ?= "boot${EFI_ARCH}.efi"
+diff --git a/meta/lib/oe/package_manager/__init__.py b/meta/lib/oe/package_manager/__init__.py
+index a6bf2fe219..0c313190cf 100644
+--- a/meta/lib/oe/package_manager/__init__.py
++++ b/meta/lib/oe/package_manager/__init__.py
+@@ -122,7 +122,8 @@ def generate_locale_archive(d, rootfs, target_arch, localedir):
+         "riscv32": ["--uint32-align=4", "--little-endian"],
+         "i586": ["--uint32-align=4", "--little-endian"],
+         "i686": ["--uint32-align=4", "--little-endian"],
+-        "x86_64": ["--uint32-align=4", "--little-endian"]
++        "x86_64": ["--uint32-align=4", "--little-endian"],
++        "loongarch64": ["--uint32-align=4", "--little-endian"]
+     }
+     if target_arch in locale_arch_options:
+         arch_options = locale_arch_options[target_arch]
+diff --git a/meta/recipes-core/glibc/glibc-locale.inc b/meta/recipes-core/glibc/glibc-locale.inc
+index 7f70b3ca4f..760de9437b 100644
+--- a/meta/recipes-core/glibc/glibc-locale.inc
++++ b/meta/recipes-core/glibc/glibc-locale.inc
+@@ -20,7 +20,7 @@ ENABLE_BINARY_LOCALE_GENERATION:pn-nativesdk-glibc-locale = "1"
+ 
+ #enable locale generation on these arches
+ # BINARY_LOCALE_ARCHES is a space separated list of regular expressions
+-BINARY_LOCALE_ARCHES ?= "arc arm.* aarch64 i[3-6]86 x86_64 powerpc mips mips64 riscv32 riscv64"
++BINARY_LOCALE_ARCHES ?= "arc arm.* aarch64 i[3-6]86 x86_64 powerpc mips mips64 riscv32 riscv64 loongarch64"
+ 
+ # set "1" to use cross-localedef for locale generation
+ # set "0" for qemu emulation of native localedef for locale generation
+diff --git a/meta/recipes-devtools/gcc/gcc-runtime.inc b/meta/recipes-devtools/gcc/gcc-runtime.inc
+index fa5b048dab..bccc8a5b89 100644
+--- a/meta/recipes-devtools/gcc/gcc-runtime.inc
++++ b/meta/recipes-devtools/gcc/gcc-runtime.inc
+@@ -38,6 +38,7 @@ RUNTIMELIBITM:nios2 = ""
+ RUNTIMELIBITM:microblaze = ""
+ RUNTIMELIBITM:riscv32 = ""
+ RUNTIMELIBITM:riscv64 = ""
++RUNTIMELIBITM:loongarch64 = ""
+ RUNTIMELIBSSP ?= ""
+ RUNTIMELIBSSP:mingw32 ?= "libssp"
+ 
+diff --git a/meta/recipes-graphics/vulkan/vulkan-samples_git.bb b/meta/recipes-graphics/vulkan/vulkan-samples_git.bb
+index 0a936a78e2..e6405ff461 100644
+--- a/meta/recipes-graphics/vulkan/vulkan-samples_git.bb
++++ b/meta/recipes-graphics/vulkan/vulkan-samples_git.bb
+@@ -19,7 +19,7 @@ UPSTREAM_CHECK_GITTAGREGEX = "These are not the releases you're looking for"
+ S = "${WORKDIR}/git"
+ 
+ REQUIRED_DISTRO_FEATURES = 'vulkan'
+-COMPATIBLE_HOST = "(x86_64|aarch64|mips64|powerpc64|riscv64).*-linux"
++COMPATIBLE_HOST = "(x86_64|aarch64|mips64|powerpc64|riscv64|loongarch64).*-linux"
+ 
+ inherit cmake features_check
+ 
+diff --git a/scripts/runqemu b/scripts/runqemu
+index def11ea911..faa7c9fc75 100755
+--- a/scripts/runqemu
++++ b/scripts/runqemu
+@@ -818,7 +818,7 @@ class BaseConfig(object):
+         self.set('QB_MEM', qb_mem)
+ 
+         mach = self.get('MACHINE')
+-        if not mach.startswith(('qemumips', 'qemux86')):
++        if not mach.startswith(('qemumips', 'qemux86', 'qemuloongarch64')):
+             self.kernel_cmdline_script += ' mem=%s' % self.get('QB_MEM').replace('-m','').strip() + 'M'
+ 
+         self.qemu_opt_script += ' %s' % self.get('QB_MEM')
