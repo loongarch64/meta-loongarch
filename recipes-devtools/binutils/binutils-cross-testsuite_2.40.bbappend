@@ -1,0 +1,1 @@
+EXTRA_OECONF:remove:loongarch64 = "--enable-gold"
