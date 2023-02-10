@@ -18,6 +18,7 @@ git clone https://github.com/loongarch64/meta-loongarch.git
 ```bash
 export MACHINE=qemuloongarch64
 source oe-init-build-env
+bitbake-layers add-layer ../meta-loongson/
 ```
 
 4. 根据文件meta loongarch/poky patch/patch对mete层中的文件进行更改
