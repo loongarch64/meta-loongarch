@@ -1,0 +1,1 @@
+QB_MEM:qemuloongarch64 = "-m 2048"
