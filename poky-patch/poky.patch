@@ -123,6 +123,19 @@ index 664fe7310e..2eb6510897 100644
  # Use the same restriction as initramfs-module-install
 -COMPATIBLE_HOST = '(x86_64.*|i.86.*|arm.*|aarch64.*)-(linux.*|freebsd.*)'
 +COMPATIBLE_HOST = '(x86_64.*|i.86.*|arm.*|aarch64.*|loongarch.*)-(linux.*|freebsd.*)'
+diff --git a/meta/recipes-core/initrdscripts/initramfs-module-install_1.0.bb b/meta/recipes-core/initrdscripts/initramfs-module-install_1.0.bb
+index 4d48d54e9e..007f6ecb6e 100644
+--- a/meta/recipes-core/initrdscripts/initramfs-module-install_1.0.bb
++++ b/meta/recipes-core/initrdscripts/initramfs-module-install_1.0.bb
+@@ -5,7 +5,7 @@ RDEPENDS:${PN} = "initramfs-framework-base grub parted e2fsprogs-mke2fs util-lin
+ RRECOMMENDS:${PN} = "${VIRTUAL-RUNTIME_base-utils-syslog}"
+
+ # The same restriction as grub
+-COMPATIBLE_HOST = '(x86_64.*|i.86.*|arm.*|aarch64.*)-(linux.*|freebsd.*)'
++COMPATIBLE_HOST = '(x86_64.*|i.86.*|arm.*|aarch64.*|loongarch.*)-(linux.*|freebsd.*)'
+ COMPATIBLE_HOST:armv7a = 'null'
+ COMPATIBLE_HOST:armv7ve = 'null'
+ 
 diff --git a/meta/recipes-devtools/gcc/gcc-runtime.inc b/meta/recipes-devtools/gcc/gcc-runtime.inc
 index fa5b048dab..bccc8a5b89 100644
 --- a/meta/recipes-devtools/gcc/gcc-runtime.inc
