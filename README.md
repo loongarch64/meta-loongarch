@@ -21,8 +21,11 @@ source oe-init-build-env
 bitbake-layers add-layer ../meta-loongarch/
 ```
 
-4. 根据文件meta loongarch/poky patch/patch对mete层中的文件进行更改
+4. 根据文件meta-loongarch/poky-patch/poky.patch对mete层中的文件进行更改
 	目前仍有一些补丁尚未提交给上游。今后将不需要该步骤。
+```bash
+cd .. && git apply meta-loongarch/poky-patch/poky.patch && cd -
+```
 
 5. 修改local.conf以适配loongarch设置。
 ```bash
