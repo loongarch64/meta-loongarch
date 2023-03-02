@@ -82,12 +82,6 @@ do_install() {
     install -m 644 ${B}/${GRUB_IMAGE_PREFIX}${GRUB_IMAGE} ${D}${EFI_FILES_PATH}/${GRUB_IMAGE}
 }
 
-do_install:append:class-target:loongarch64() {
-        install -d ${D}/boot
-        install -d ${D}/boot/efi/EFI
-        install -d ${D}/boot/efi/EFI/BOOT
-        install -m 644 ${B}/${GRUB_IMAGE_PREFIX}${GRUB_IMAGE} ${D}/boot/efi/EFI/BOOT/BOOTL.EFI
-}
 
 
 # To include all available modules, add 'all' to GRUB_BUILDIN
@@ -96,7 +90,7 @@ GRUB_BUILDIN ?= "boot linux ext2 fat serial part_msdos part_gpt normal \
 
 
 do_deploy() {
-        install -m 644 ${B}/${GRUB_IMAGE_PREFIX}${GRUB_IMAGE} ${DEPLOYDIR}/BOOTL.EFI
+	install -m 644 ${B}/${GRUB_IMAGE_PREFIX}${GRUB_IMAGE} ${DEPLOYDIR}/${GRUB_IMAGE}
 }
 
 addtask deploy after do_install before do_build
@@ -105,9 +99,9 @@ FILES:${PN} = "${libdir}/grub/${GRUB_TARGET}-efi \
                ${datadir}/grub \
                ${EFI_FILES_PATH}/${GRUB_IMAGE} \
                "
-FILES:${PN} += " \
-               /boot/efi/EFI/BOOT/${GRUB_IMAGE} \
-               /boot/efi/EFI/BOOT/BOOTL.EFI \
-               "
 
-do_package_qa[noexec]="1"
+# 64-bit binaries are expected for the bootloader with an x32 userland
+INSANE_SKIP:${PN}:append:linux-gnux32 = " arch"
+INSANE_SKIP:${PN}-dbg:append:linux-gnux32 = " arch"
+INSANE_SKIP:${PN}:append:linux-muslx32 = " arch"
+INSANE_SKIP:${PN}-dbg:append:linux-muslx32 = " arch"
