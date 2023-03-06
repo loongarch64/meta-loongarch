@@ -1,9 +1,9 @@
 Upstream-Status: Pending
 Signed-off-by: Fuxin Zhang <fxzhang@ict.ac.cn>
 ---
-diff -urN openssl-3.0.5.ori/Configurations/10-main.conf openssl-3.0.5/Configurations/10-main.conf
---- openssl-3.0.5.ori/Configurations/10-main.conf	2022-11-01 01:47:36.629532756 +0000
-+++ openssl-3.0.5/Configurations/10-main.conf	2022-11-01 01:41:39.423556741 +0000
+diff -urN openssl-3.0.8.ori/Configurations/10-main.conf openssl-3.0.8/Configurations/10-main.conf
+--- openssl-3.0.8.ori/Configurations/10-main.conf	2022-11-01 01:47:36.629532756 +0000
++++ openssl-3.0.8/Configurations/10-main.conf	2022-11-01 01:41:39.423556741 +0000
 @@ -818,6 +818,18 @@
          perlasm_scheme   => "linux64",
      },
@@ -23,9 +23,9 @@ diff -urN openssl-3.0.5.ori/Configurations/10-main.conf openssl-3.0.5/Configurat
      #### IA-32 targets...
      #### These two targets are a bit aged and are to be used on older Linux
      #### machines where gcc doesn't understand -m32 and -m64
-diff -urN openssl-3.0.5.ori/util/perl/OpenSSL/config.pm openssl-3.0.5/util/perl/OpenSSL/config.pm
---- openssl-3.0.5.ori/util/perl/OpenSSL/config.pm	2022-11-01 01:47:55.717852446 +0000
-+++ openssl-3.0.5/util/perl/OpenSSL/config.pm	2022-11-01 01:45:39.907578548 +0000
+diff -urN openssl-3.0.8.ori/util/perl/OpenSSL/config.pm openssl-3.0.8/util/perl/OpenSSL/config.pm
+--- openssl-3.0.8.ori/util/perl/OpenSSL/config.pm	2022-11-01 01:47:55.717852446 +0000
++++ openssl-3.0.8/util/perl/OpenSSL/config.pm	2022-11-01 01:45:39.907578548 +0000
 @@ -681,6 +681,7 @@
        ],
        [ '.*86-.*-linux1',         { target => "linux-aout" } ],
