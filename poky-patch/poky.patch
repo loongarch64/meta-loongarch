@@ -126,6 +126,32 @@ index 7f70b3c..760de94 100644
  
  # set "1" to use cross-localedef for locale generation
  # set "0" for qemu emulation of native localedef for locale generation
+diff --git a/meta/recipes-core/glibc/glibc-package.inc b/meta/recipes-core/glibc/glibc-package.inc
+index 7f9e750..77df686 100644
+--- a/meta/recipes-core/glibc/glibc-package.inc
++++ b/meta/recipes-core/glibc/glibc-package.inc
+@@ -25,7 +25,7 @@ INSANE_SKIP:${PN}:append:aarch64 = " libdir"
+ INSANE_SKIP:${PN}-dev += "staticdev"
+ INSANE_SKIP:${MLPREFIX}ldso:append = " dev-so libdir"
+ 
+-FILES:${PN} = "${libc_baselibs} ${libexecdir}/* ${sysconfdir}/ld.so.conf"
++FILES:${PN} = "${libc_baselibs} ${libexecdir}/* ${sysconfdir}/ld.so.conf lib64/"
+ RRECOMMENDS:${PN} = "${@bb.utils.contains('DISTRO_FEATURES', 'ldconfig', '${MLPREFIX}ldconfig', '', d)}"
+ FILES:ldconfig = "${base_sbindir}/ldconfig"
+ FILES:ldd = "${bindir}/ldd"
+@@ -156,6 +156,12 @@ do_install:append:armeb () {
+ 	do_install_armmultilib
+ }
+ 
++do_install:append:loongarch64 () {
++	cd ${D}${root_prefix}
++	ln -s lib lib64
++	cd -
++}
++
+ do_install_armmultilib () {
+ 	oe_multilib_header bits/endian.h bits/fcntl.h bits/fenv.h bits/fp-fast.h bits/hwcap.h bits/ipc.h bits/link.h
+ 	oe_multilib_header bits/local_lim.h bits/mman.h bits/msq.h bits/pthreadtypes.h bits/pthreadtypes-arch.h  bits/sem.h  bits/semaphore.h bits/setjmp.h
 diff --git a/meta/recipes-core/images/core-image-minimal-initramfs.bb b/meta/recipes-core/images/core-image-minimal-initramfs.bb
 index 664fe73..2eb6510 100644
 --- a/meta/recipes-core/images/core-image-minimal-initramfs.bb
