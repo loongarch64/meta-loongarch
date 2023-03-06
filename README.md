@@ -29,7 +29,7 @@ cd .. && git apply meta-loongarch/poky-patch/poky.patch && cd -
 
 5. 修改local.conf以适配loongarch设置。
 ```bash
-cp ../meta-loongarch/conf/local.conf.sample conf/local.conf # 编译运行在qeme上的镜像
+cp ../meta-loongarch/conf/local.conf.sample conf/local.conf # 编译运行在qemu上的镜像
 cp ../meta-loongarch/conf/local-iso.conf.sample conf/local.conf # 编译运行在真机上的iso镜像
 ```
 
