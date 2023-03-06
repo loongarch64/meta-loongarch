@@ -20,9 +20,8 @@ SRC_URI = "git://github.com/loongarch64/grub.git;branch=dev/patchwork/efi;protoc
            file://determinism.patch \
            file://0001-RISC-V-Restore-the-typcast-to-long.patch \
 "
-SRCREV = "${AUTOREV}"
+SRCREV = "1554da7b30e04e36b18640edb2fd6c89c569429b"
 S = "${WORKDIR}/git"
-#SRC_URI[sha256sum] = "23b64b4c741569f9426ed2e3d0e6780796fca081bee4c99f62aa3f53ae803f5f"
 
 # Applies only to RHEL
 CVE_CHECK_IGNORE += "CVE-2019-14865"
