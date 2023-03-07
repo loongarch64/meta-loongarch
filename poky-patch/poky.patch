@@ -1,5 +1,5 @@
 diff --git a/meta/classes-recipe/libc-package.bbclass b/meta/classes-recipe/libc-package.bbclass
-index 8a99f73ae7..bf160b115d 100644
+index 8a99f73..bf160b1 100644
 --- a/meta/classes-recipe/libc-package.bbclass
 +++ b/meta/classes-recipe/libc-package.bbclass
 @@ -268,7 +268,8 @@ python package_do_split_gconvs () {
@@ -13,7 +13,7 @@ index 8a99f73ae7..bf160b115d 100644
              if target_arch in locale_arch_options:
                  localedef_opts = locale_arch_options[target_arch]
 diff --git a/meta/classes-recipe/meson-routines.bbclass b/meta/classes-recipe/meson-routines.bbclass
-index 6086fce9d9..a944a8fff1 100644
+index 6086fce..a944a8f 100644
 --- a/meta/classes-recipe/meson-routines.bbclass
 +++ b/meta/classes-recipe/meson-routines.bbclass
 @@ -23,6 +23,8 @@ def meson_cpu_family(var, d):
@@ -26,7 +26,7 @@ index 6086fce9d9..a944a8fff1 100644
          return 'mips'
      elif arch == 'mips64el':
 diff --git a/meta/classes-recipe/rust-target-config.bbclass b/meta/classes-recipe/rust-target-config.bbclass
-index 5e71546fee..21a56ede3e 100644
+index 5e71546..21a56ed 100644
 --- a/meta/classes-recipe/rust-target-config.bbclass
 +++ b/meta/classes-recipe/rust-target-config.bbclass
 @@ -245,6 +245,14 @@ TARGET_POINTER_WIDTH[riscv64gc] = "64"
@@ -62,7 +62,7 @@ index 5e71546fee..21a56ede3e 100644
      tspec['target-family'] = "unix"
      tspec['linker'] = "{}{}gcc".format(d.getVar('CCACHE'), prefix)
 diff --git a/meta/conf/image-uefi.conf b/meta/conf/image-uefi.conf
-index 04a151f3a4..18351e7e3c 100644
+index 04a151f..18351e7 100644
 --- a/meta/conf/image-uefi.conf
 +++ b/meta/conf/image-uefi.conf
 @@ -16,6 +16,7 @@ EFI_ARCH:aarch64 = "aa64"
@@ -74,7 +74,7 @@ index 04a151f3a4..18351e7e3c 100644
  # Determine name of bootloader image
  EFI_BOOT_IMAGE ?= "boot${EFI_ARCH}.efi"
 diff --git a/meta/lib/oe/package_manager/__init__.py b/meta/lib/oe/package_manager/__init__.py
-index a6bf2fe219..0c313190cf 100644
+index a6bf2fe..0c31319 100644
 --- a/meta/lib/oe/package_manager/__init__.py
 +++ b/meta/lib/oe/package_manager/__init__.py
 @@ -122,7 +122,8 @@ def generate_locale_archive(d, rootfs, target_arch, localedir):
@@ -88,7 +88,7 @@ index a6bf2fe219..0c313190cf 100644
      if target_arch in locale_arch_options:
          arch_options = locale_arch_options[target_arch]
 diff --git a/meta/recipes-core/glibc/glibc-locale.inc b/meta/recipes-core/glibc/glibc-locale.inc
-index 7f70b3ca4f..760de9437b 100644
+index 7f70b3c..760de94 100644
 --- a/meta/recipes-core/glibc/glibc-locale.inc
 +++ b/meta/recipes-core/glibc/glibc-locale.inc
 @@ -20,7 +20,7 @@ ENABLE_BINARY_LOCALE_GENERATION:pn-nativesdk-glibc-locale = "1"
@@ -101,7 +101,7 @@ index 7f70b3ca4f..760de9437b 100644
  # set "1" to use cross-localedef for locale generation
  # set "0" for qemu emulation of native localedef for locale generation
 diff --git a/meta/recipes-devtools/gcc/gcc-runtime.inc b/meta/recipes-devtools/gcc/gcc-runtime.inc
-index fa5b048dab..bccc8a5b89 100644
+index fa5b048..bccc8a5 100644
 --- a/meta/recipes-devtools/gcc/gcc-runtime.inc
 +++ b/meta/recipes-devtools/gcc/gcc-runtime.inc
 @@ -38,6 +38,7 @@ RUNTIMELIBITM:nios2 = ""
@@ -113,10 +113,10 @@ index fa5b048dab..bccc8a5b89 100644
  RUNTIMELIBSSP:mingw32 ?= "libssp"
  
 diff --git a/meta/recipes-graphics/vulkan/vulkan-samples_git.bb b/meta/recipes-graphics/vulkan/vulkan-samples_git.bb
-index 0a936a78e2..e6405ff461 100644
+index 20f3990..05babf4 100644
 --- a/meta/recipes-graphics/vulkan/vulkan-samples_git.bb
 +++ b/meta/recipes-graphics/vulkan/vulkan-samples_git.bb
-@@ -19,7 +19,7 @@ UPSTREAM_CHECK_GITTAGREGEX = "These are not the releases you're looking for"
+@@ -18,7 +18,7 @@ UPSTREAM_CHECK_GITTAGREGEX = "These are not the releases you're looking for"
  S = "${WORKDIR}/git"
  
  REQUIRED_DISTRO_FEATURES = 'vulkan'
@@ -125,8 +125,21 @@ index 0a936a78e2..e6405ff461 100644
  
  inherit cmake features_check
  
+diff --git a/meta/recipes-kernel/linux/linux-yocto_6.1.bb b/meta/recipes-kernel/linux/linux-yocto_6.1.bb
+index be31a22..c43a75a 100644
+--- a/meta/recipes-kernel/linux/linux-yocto_6.1.bb
++++ b/meta/recipes-kernel/linux/linux-yocto_6.1.bb
+@@ -16,7 +16,7 @@ KBRANCH:qemumips64 ?= "v6.1/standard/mti-malta64"
+ 
+ SRCREV_machine:qemuarm ?= "129155997616e25e7221ed259fa75282e46a00b6"
+ SRCREV_machine:qemuarm64 ?= "b05ca3429c1eef8cfff0b5638c8a5bb708b4e98a"
+-SRCREV_machine:qemuloongarch64 ?= "1caf99d56881e1510afca553cd4a057f80479973"
++SRCREV_machine:qemuloongarch64 ?= "b05ca3429c1eef8cfff0b5638c8a5bb708b4e98a"
+ SRCREV_machine:qemumips ?= "aa98067af82a03ef5223e9c116506030a732eb24"
+ SRCREV_machine:qemuppc ?= "b05ca3429c1eef8cfff0b5638c8a5bb708b4e98a"
+ SRCREV_machine:qemuriscv64 ?= "b05ca3429c1eef8cfff0b5638c8a5bb708b4e98a"
 diff --git a/scripts/runqemu b/scripts/runqemu
-index def11ea911..faa7c9fc75 100755
+index 58b0c19..b4949ea 100755
 --- a/scripts/runqemu
 +++ b/scripts/runqemu
 @@ -818,7 +818,7 @@ class BaseConfig(object):
