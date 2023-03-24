@@ -1,22 +1,35 @@
 #!/bin/bash
 # Bootstrapper for buildbot slave
-
 SELF_DIR=$(dirname `realpath $0`)
 
 export LC_ALL=en_US.UTF-8
-export BB_NUMBER_THREADS="10"
-export PARALLEL_MAKE=" -j 10"
+export BB_NUMBER_THREADS="`nproc`"
+export PARALLEL_MAKE=" -j `nproc`"
 
 DIR="build"
 MACHINE="qemuloongarch64"
 CONFFILE="conf/auto.conf"
-TARGET="core-image-minimal"
+TARGET=${TARGET:-core-image-minimal}
 DL_DIR=$(dirname $SELF_DIR)/downloads
 
 # bootstrap OE
-echo "Init OE"
-export BASH_SOURCE="openembedded-core/oe-init-build-env"
-. ./openembedded-core/oe-init-build-env $DIR
+if [[ -n "$DISTRO" && -d "$DISTRO" ]]; then
+	if [ -f ./$DISTRO/oe-init-build-env ]; then
+		DISTRO=`basename $DISTRO`
+	else
+		DISTRO="openembedded-core"
+	fi
+else
+	if [ -d openembedded-core ]; then
+		DISTRO="openembedded-core"
+	elif [ -d poky ]; then
+		DISTRO="poky"
+	fi
+fi
+
+echo "Init OE for $DISTRO"
+export BASH_SOURCE="$DISTRO/oe-init-build-env"
+. ./$DISTRO/oe-init-build-env $DIR
 
 # Symlink the downloads
 if [ ! -L downloads ]; then
@@ -52,24 +65,67 @@ QB_ROOTFS_OPT:qemuloongarch64 = "-drive id=disk0,file=@ROOTFS@,if=none,format=ra
 QB_GRAPHICS:qemuloongarch64 = "-device virtio-vga -device qemu-xhci -device usb-kbd -device usb-mouse"
 EOF
 
-echo "To build an image run"
-echo "---------------------------------------------------"
-echo "MACHINE=qemuloongarch64 bitbake core-image-full-cmdline"
-echo "---------------------------------------------------"
-echo ""
-echo "Buildable machine info"
-echo "---------------------------------------------------"
-echo "* qemuloongarch64: The 64-bit LoongArch machine"
-echo "---------------------------------------------------"
-echo "Common targets are:"
-echo "    core-image-minimal"
-echo "    core-image-full-cmdline"
-echo "    core-image-sato"
-echo "    core-image-weston"
-echo "    meta-toolchain"
-echo "    meta-ide-support"
-echo "---------------------------------------------------"
-
 # start build
-echo "Starting build"
-bitbake -vDDD ${TARGET} 2>&1 | tee ../build.log
+if [ $# -eq 0 ];then
+	echo "To build an image run"
+	echo "---------------------------------------------------"
+	echo "MACHINE=qemuloongarch64 bitbake $TARGET"
+	echo "---------------------------------------------------"
+	echo ""
+	echo "Buildable machine info"
+	echo "---------------------------------------------------"
+	echo "* qemuloongarch64: The 64-bit LoongArch machine"
+	echo "---------------------------------------------------"
+	echo "Common targets are:"
+	echo "    core-image-minimal"
+	echo "    core-image-full-cmdline"
+	echo "    core-image-sato"
+	echo "    core-image-weston"
+	echo "    meta-toolchain"
+	echo "    meta-ide-support"
+	echo "---------------------------------------------------"
+	echo "Starting build..."
+	echo "$ bitbake -vDDD ${TARGET}"
+	read -p "Continue[Y/n]? " -n 1 -r
+	echo
+	if [[ ! $REPLY =~ ^[Yy]$ ]] && [ ! -z $REPLY ]; then
+		[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+	fi
+	bitbake -vDDD ${TARGET} 2>&1 | tee ../build.log
+elif [ $# -eq 1 ];then
+        if echo $1 | grep ":";then
+                items=(${1//:/ })
+                echo "Starting build..."
+                echo "$ bitbake -vDDD -b ${items[0]} -c ${items[1]}"
+		read -p "Continue[Y/n]? " -n 1 -r
+		echo
+		if [[ ! $REPLY =~ ^[Yy]$ ]] && [ ! -z $REPLY ]; then
+			[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+		fi
+		unset BB_NUMBER_THREADS
+		unset PARALLEL_MAKE
+                bitbake -vDDD -b ${items[0]} -c ${items[1]} 2>&1 | tee ../one.log
+        else
+                echo "Starting build..."
+                echo "$ bitbake -vDDD -b $1"
+		read -p "Continue[Y/n]? " -n 1 -r
+		echo
+		if [[ ! $REPLY =~ ^[Yy]$ ]] && [ ! -z $REPLY ]; then
+			[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+		fi
+		unset BB_NUMBER_THREADS
+		unset PARALLEL_MAKE
+                bitbake -vDDD -b $1 2>&1 | tee ../one.log
+        fi
+elif [ $# -eq 2 ];then
+	echo "Starting build..."
+        echo "$ bitbake -vDDD -b $1 -c $2"
+	read -p "Continue[Y/n]? " -n 1 -r
+	echo
+	if [[ ! $REPLY =~ ^[Yy]$ ]] && [ ! -z $REPLY ]; then
+		[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+	fi
+	unset BB_NUMBER_THREADS
+	unset PARALLEL_MAKE
+        bitbake -vDDD -b $1 -c $2 2>&1 | tee ../one.log
+fi
