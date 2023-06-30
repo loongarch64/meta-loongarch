@@ -1,3 +1,4 @@
+Upstream-Status: Backport
 --- Python-3.11.1/configure.ac.ori	2023-01-02 17:22:11.811803138 +0800
 +++ Python-3.11.1/configure.ac	2023-01-02 17:21:17.849615015 +0800
 @@ -939,6 +939,8 @@
