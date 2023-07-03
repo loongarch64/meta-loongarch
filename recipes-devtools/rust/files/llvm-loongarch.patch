@@ -1,3 +1,4 @@
+Upstream-Status: Backport
 diff --git a/src/llvm-project/clang/bindings/python/tests/CMakeLists.txt b/src/llvm-project/clang/bindings/python/tests/CMakeLists.txt
 index 280da9d00686..9d9cb911b5a2 100644
 --- a/src/llvm-project/clang/bindings/python/tests/CMakeLists.txt
