@@ -1,0 +1,32 @@
+From b05288e29cd5d52ea81ff684a976f5e26c1f42f3 Mon Sep 17 00:00:00 2001
+From: Zang Ruochen <zangruochen@loongson.cn>
+Date: Thu, 13 Jul 2023 20:01:11 +0800
+Subject: [PATCH] add loongarch iomem.h
+
+Upstream-Status: Pending
+
+Signed-off-by: Zang Ruochen <zangruochen@loongson.cn>
+---
+ kexec/arch/loongarch/iomem.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+ create mode 100644 kexec/arch/loongarch/iomem.h
+
+diff --git a/kexec/arch/loongarch/iomem.h b/kexec/arch/loongarch/iomem.h
+new file mode 100644
+index 0000000..d4864bb
+--- /dev/null
++++ b/kexec/arch/loongarch/iomem.h
+@@ -0,0 +1,10 @@
++#ifndef IOMEM_H
++#define IOMEM_H
++
++#define SYSTEM_RAM		"System RAM\n"
++#define KERNEL_CODE		"Kernel code\n"
++#define KERNEL_DATA		"Kernel data\n"
++#define CRASH_KERNEL		"Crash kernel\n"
++#define IOMEM_RESERVED		"reserved\n"
++
++#endif
+-- 
+2.25.1
+
