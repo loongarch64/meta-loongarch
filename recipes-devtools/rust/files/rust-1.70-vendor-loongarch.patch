@@ -2,6 +2,7 @@ From 82eb33c3a5c66abb3ef255c9b474d2e36e148074 Mon Sep 17 00:00:00 2001
 From: WANG Rui <wangrui@loongson.cn>
 Date: Fri, 16 Jun 2023 11:15:15 +0800
 Subject: [PATCH] rust: 1.70: vendor loongarch
+Upstream-Status: Backport
 
 ---
  vendor/libffi-sys/.cargo-checksum.json        |    2 +-
