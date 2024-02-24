@@ -12,10 +12,11 @@
 mkdir -p loong-yocto/downloads
 cd loong-yocto
 git clone https://github.com/openembedded/bitbake.git
-git clone https://github.com/openembedded/openembedded-core.git
-git clone https://git.yoctoproject.org/poky.git
-git clone https://github.com/loongarch64/meta-loongarch.git
+git clone -b mickledore https://github.com/openembedded/openembedded-core.git
+git clone -b mickledore https://git.yoctoproject.org/poky.git
+git clone -b mickledore https://github.com/loongarch64/meta-loongarch.git
 ```
+
 
 - `downloads` 目录用于保存下载的软件源代码，可在多次构建之间共享。
 
