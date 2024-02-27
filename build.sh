@@ -12,19 +12,15 @@ CONFFILE="conf/auto.conf"
 TARGET=${TARGET:-core-image-minimal}
 DL_DIR=$(dirname $SELF_DIR)/downloads
 
-# bootstrap OE
-if [[ -n "$DISTRO" && -d "$DISTRO" ]]; then
-	if [ -f ./$DISTRO/oe-init-build-env ]; then
-		DISTRO=`basename $DISTRO`
-	else
-		DISTRO="openembedded-core"
-	fi
-else
-	if [ -d openembedded-core ]; then
-		DISTRO="openembedded-core"
-	elif [ -d poky ]; then
-		DISTRO="poky"
-	fi
+DISTRO="poky"
+SERIES_COMPAT="nanbield"
+
+echo "Check series compat"
+value=$(sed -E '/^#.*|^ *$/d' ./${DISTRO}/meta/conf/layer.conf|awk -F "LAYERSERIES_CORENAMES = " "/LAYERSERIES_CORENAMES = /{print \$2}"|sed 's/\"//g'|tail -n1)
+if [[ "$value" != "$SERIES_COMPAT" ]];then
+	echo "Please check the run path and poky version!
+the required version is $SERIES_COMPAT, the current version is $value."
+	return 1;
 fi
 
 echo "Init OE for $DISTRO"
