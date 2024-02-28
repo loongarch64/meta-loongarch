@@ -1,10 +1,15 @@
 Upstream-Status: Pending
 Signed-off-by: Fuxin Zhang <fxzhang@ict.ac.cn>
 ---
-diff -urN openssl-3.1.0.ori/Configurations/10-main.conf openssl-3.1.0/Configurations/10-main.conf
---- openssl-3.1.0.ori/Configurations/10-main.conf	2022-11-01 01:47:36.629532756 +0000
-+++ openssl-3.1.0/Configurations/10-main.conf	2022-11-01 01:41:39.423556741 +0000
-@@ -818,6 +818,18 @@
+ Configurations/10-main.conf | 13 +++++++++++++
+ util/perl/OpenSSL/config.pm |  1 +
+ 2 files changed, 14 insertions(+)
+
+diff --git a/Configurations/10-main.conf b/Configurations/10-main.conf
+index e8084ab..e03d043 100644
+--- a/Configurations/10-main.conf
++++ b/Configurations/10-main.conf
+@@ -833,6 +833,19 @@ my %targets = (
          asm_arch         => 'loongarch64',
      },
  
@@ -20,13 +25,15 @@ diff -urN openssl-3.1.0.ori/Configurations/10-main.conf openssl-3.1.0/Configurat
 +        perlasm_scheme   => "linux64",
 +    },
 +
++
      #### IA-32 targets...
      #### These two targets are a bit aged and are to be used on older Linux
      #### machines where gcc doesn't understand -m32 and -m64
-diff -urN openssl-3.1.0.ori/util/perl/OpenSSL/config.pm openssl-3.1.0/util/perl/OpenSSL/config.pm
---- openssl-3.1.0.ori/util/perl/OpenSSL/config.pm	2022-11-01 01:47:55.717852446 +0000
-+++ openssl-3.1.0/util/perl/OpenSSL/config.pm	2022-11-01 01:45:39.907578548 +0000
-@@ -681,6 +681,7 @@
+diff --git a/util/perl/OpenSSL/config.pm b/util/perl/OpenSSL/config.pm
+index 6350e1e..2337de8 100755
+--- a/util/perl/OpenSSL/config.pm
++++ b/util/perl/OpenSSL/config.pm
+@@ -713,6 +713,7 @@ EOF
        ],
        [ '.*86-.*-linux1',         { target => "linux-aout" } ],
        [ 'riscv64-.*-linux.',      { target => "linux64-riscv64" } ],

@@ -4,38 +4,41 @@
 
 ## 构建
 
-### 准备源码
+### 1.准备源码
 
-运行以下命令，克隆相关软件仓库：
-
-```
-mkdir -p loong-yocto/downloads
-cd loong-yocto
-git clone https://github.com/openembedded/bitbake.git
-git clone https://github.com/openembedded/openembedded-core.git
-git clone https://git.yoctoproject.org/poky.git
-git clone https://github.com/loongarch64/meta-loongarch.git
+基于WSL2 Debian构建，安装相关包，**使用非root用户编译**
+``` shell
+sudo apt install gawk wget git diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev python3-subunit mesa-common-dev zstd liblz4-tool file locales tmux
 ```
 
-- `downloads` 目录用于保存下载的软件源代码，可在多次构建之间共享。
+a.克隆poky仓库，进入目录
 
-### 构建发行版
-
-`build.sh` 默认会构建 `OpenEmbedded` 发行版，同时也支持构建 `Poky` 发行版。
-
-可通过设置环境变量 `DISTRO` 来明确指定发行版，比如：
-
+``` shell
+cd ~
+git clone https://github.com/yoctoproject/poky.git
+cd poky
 ```
-cd loong-yocto
-./meta-loongarch/build.sh                          # Default, to build OpenEmbedded distro
-DISTRO=openembedded-core ./meta-loongarch/build.sh # Build the OpenEmbedded Distro
-DISTRO=poky ./meta-loongarch/build.sh              # Build the Poky Distro
+b.基于yocto-4.3适配, 切换到对应tag
+``` shell
+git checkout -b loong yocto-4.3
 ```
 
-### 构建目标
+c.克隆loongarch bsp层
+``` shell
+git clone https://github.com/otomam/meta-loongarch.git
+```
 
-`build.sh` 脚本默认构建目标为 `core-image-minimal`, 可支持以下公共目标：
-
+### 2.构建发行版
+a.配置构建环境，使用loongarch的配置文件
+``` shell
+export TEMPLATECONF=$PWD/meta-loongarch/conf/templates/default
+. oe-init-build-env
+```
+a.构建镜像
+``` shell
+bitbake core-image-minimal
+``````
+可选：
 - core-image-minimal
 - core-image-full-cmdline
 - core-image-sato
@@ -43,25 +46,39 @@ DISTRO=poky ./meta-loongarch/build.sh              # Build the Poky Distro
 - meta-toolchain
 - meta-ide-support
 
-要指定编译不同的目标，可通过设置环境变量 `TARGET` 来完成，比如：
+#### 构建报错
 
+##### 例如构建llvm-native报错
+```shell
+| g++: fatal error: Killed signal terminated program cc1plus
+| compilation terminated.
 ```
-cd loong-yocto
-TARGET=core-image-full-cmdline ./meta-loongarch/build.sh
++ 可以单独编译并查看详细输出  
+```
+bitbake llvm-native -v -D
+```
++ 这是在构建时内存不足导致的，可以单独构建或重复构建，或者根据实际情况减少并行编译的任务数或线程  
+```
+# ./build/local.conf
+BB_NUMBER_THREADS ='8'
+PARALLEL_MAKE = "-j 8"
 ```
 
-## 调试
-
-在编译发生错误时，可在 `build.sh` 脚本后面指定 build file，针对单一目标来构建，方便检查错误和调试。
-
-当前支持以下几种用法：
-
+### 3.虚拟机运行
++ **不带nographic参数可以同时看到串口输出和图形窗口**
+``` shell
+runqemu nographic serialstdio
 ```
-./meta-loongarch/build.sh openembedded-core/meta/recipes-kernel/linux/linux-yocto_6.1.bb
-./meta-loongarch/build.sh openembedded-core/meta/recipes-kernel/linux/linux-yocto_6.1.bb do_fetch
-./meta-loongarch/build.sh openembedded-core/meta/recipes-kernel/linux/linux-yocto_6.1.bb:do_kernel_version_sanity_check
++ **默认用户root，无密码**
+
+##### 遇到报错
+``` shell
+runqemu - ERROR - Error: There are no available tap devices to use for networking,
+runqemu - ERROR - and I see /etc/runqemu-nosudo exists, so I am not going to try creating
+runqemu - ERROR - a new one with sudo.
 ```
-
-## 提示
-
-qemu-system-longarch64需要bios。目前，edk2-loongarch提供了它的二进制代码。未来应更改为从上游拉取生成。Poky有ovmf配方，但目前还不支持loongarch。
+##### 运行以下命令
+``` shell
+sudo ../scripts/runqemu-gen-tapdevs 1000 4
+```
++ 作用：**Creating 4 tap devices for GID: 1000**
