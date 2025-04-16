@@ -53,7 +53,7 @@ cat <<EOF > $CONFFILE
 MACHINE ?= "${MACHINE}"
 CONF_VERSION = "2"
 
-IMAGE_INSTALL:append = " edk2-loongarch"
+IMAGE_INSTALL:append = " edk2"
 KERNEL_IMAGETYPE:qemuloongarch64 = "vmlinux.efi"
 QB_DEFAULT_BIOS:qemuloongarch64 = "QEMU_EFI.fd"
 EXTRA_IMAGEDEPENDS:remove:qemuloongarch64 = "u-boot"
