@@ -1,5 +1,7 @@
 #!/bin/bash
+
 # Bootstrapper for buildbot slave
+set -e
 SELF_DIR=$(dirname `realpath $0`)
 
 export LC_ALL=en_US.UTF-8
@@ -86,46 +88,47 @@ if [ $# -eq 0 ];then
 	echo "---------------------------------------------------"
 	echo "Starting build..."
 	echo "$ bitbake -vDDD ${TARGET}"
-	read -p "Continue[Y/n]? " -n 1 -r
+	read -p "Continue[Y/n]? " -n 1 -r -t 5 || { err=$?; if [ $err -gt 128 ] ; then REPLY=y; fi }
 	echo
 	if [[ ! $REPLY =~ ^[Yy]$ ]] && [ ! -z $REPLY ]; then
 		[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 	fi
+
 	bitbake -vDDD ${TARGET} 2>&1 | tee ../build.log
+	if [ ${PIPESTATUS[0]} -eq 0 ]; then
+		runqemu nographic
+	fi
 elif [ $# -eq 1 ];then
         if echo $1 | grep ":";then
                 items=(${1//:/ })
                 echo "Starting build..."
                 echo "$ bitbake -vDDD -b ${items[0]} -c ${items[1]}"
-		read -p "Continue[Y/n]? " -n 1 -r
+		read -p "Continue[Y/n]? " -n 1 -r -t 5 || { err=$?; if [ $err -gt 128 ] ; then REPLY=y; fi }
 		echo
 		if [[ ! $REPLY =~ ^[Yy]$ ]] && [ ! -z $REPLY ]; then
 			[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 		fi
-		unset BB_NUMBER_THREADS
-		unset PARALLEL_MAKE
+		unset BB_NUMBER_THREADS PARALLEL_MAKE
                 bitbake -vDDD -b ${items[0]} -c ${items[1]} 2>&1 | tee ../one.log
         else
                 echo "Starting build..."
                 echo "$ bitbake -vDDD -b $1"
-		read -p "Continue[Y/n]? " -n 1 -r
+                read -p "Continue[Y/n]? " -n 1 -r -t 5 || { err=$?; if [ $err -gt 128 ] ; then REPLY=y; fi }
 		echo
 		if [[ ! $REPLY =~ ^[Yy]$ ]] && [ ! -z $REPLY ]; then
 			[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 		fi
-		unset BB_NUMBER_THREADS
-		unset PARALLEL_MAKE
+		unset BB_NUMBER_THREADS PARALLEL_MAKE
                 bitbake -vDDD -b $1 2>&1 | tee ../one.log
         fi
 elif [ $# -eq 2 ];then
 	echo "Starting build..."
         echo "$ bitbake -vDDD -b $1 -c $2"
-	read -p "Continue[Y/n]? " -n 1 -r
+	read -p "Continue[Y/n]? " -n 1 -r -t 5 || { err=$?; if [ $err -gt 128 ] ; then REPLY=y; fi }
 	echo
 	if [[ ! $REPLY =~ ^[Yy]$ ]] && [ ! -z $REPLY ]; then
 		[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 	fi
-	unset BB_NUMBER_THREADS
-	unset PARALLEL_MAKE
+	unset BB_NUMBER_THREADS PARALLEL_MAKE
         bitbake -vDDD -b $1 -c $2 2>&1 | tee ../one.log
 fi
