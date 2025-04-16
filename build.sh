@@ -64,7 +64,7 @@ QB_OPT_APPEND:qemuloongarch64 = "-device virtio-tablet-pci -device virtio-keyboa
 QB_MEM:qemuloongarch64 = "-m 1024"
 QB_NETWORK_DEVICE:qemuloongarch64 = "-device virtio-net-pci,netdev=net0,mac=@MAC@"
 QB_ROOTFS_OPT:qemuloongarch64 = "-drive id=disk0,file=@ROOTFS@,if=none,format=raw -device virtio-blk-pci,drive=disk0"
-QB_GRAPHICS:qemuloongarch64 = "-device virtio-vga -device qemu-xhci -device usb-kbd -device usb-mouse"
+QB_GRAPHICS:qemuloongarch64 = "-device virtio-gpu-pci -device qemu-xhci -device usb-kbd -device usb-mouse"
 EOF
 
 # start build
