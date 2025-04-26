@@ -11,25 +11,30 @@
 ```
 mkdir -p loong-yocto/downloads
 cd loong-yocto
-git clone https://github.com/openembedded/bitbake.git
-git clone https://github.com/openembedded/openembedded-core.git
-git clone https://git.yoctoproject.org/poky.git
-git clone https://github.com/loongarch64/meta-loongarch.git
+repo init -u https://github.com/loongarch64/meta-loongarch  -b master -m tools/manifests/loong-yocto.xml
+repo sync
+repo start work --all
 ```
 
 - `downloads` 目录用于保存下载的软件源代码，可在多次构建之间共享。
 
-### 构建发行版
+### 更新已存在的本地代码
 
-`build.sh` 默认会构建 `OpenEmbedded` 发行版，同时也支持构建 `Poky` 发行版。
-
-可通过设置环境变量 `DISTRO` 来明确指定发行版，比如：
+运行以下代码，以保持和上游同步
 
 ```
 cd loong-yocto
-./meta-loongarch/build.sh                          # Default, to build OpenEmbedded distro
-DISTRO=openembedded-core ./meta-loongarch/build.sh # Build the OpenEmbedded Distro
-DISTRO=poky ./meta-loongarch/build.sh              # Build the Poky Distro
+repo sync
+repo rebase
+```
+
+### 构建发行版
+
+运行 `build.sh` 命令默认构建:
+
+```
+cd loong-yocto
+./build.sh
 ```
 
 ### 构建目标
@@ -47,7 +52,7 @@ DISTRO=poky ./meta-loongarch/build.sh              # Build the Poky Distro
 
 ```
 cd loong-yocto
-TARGET=core-image-full-cmdline ./meta-loongarch/build.sh
+TARGET=core-image-full-cmdline ./build.sh
 ```
 
 ## 调试
@@ -57,11 +62,7 @@ TARGET=core-image-full-cmdline ./meta-loongarch/build.sh
 当前支持以下几种用法：
 
 ```
-./meta-loongarch/build.sh openembedded-core/meta/recipes-kernel/linux/linux-yocto_6.1.bb
-./meta-loongarch/build.sh openembedded-core/meta/recipes-kernel/linux/linux-yocto_6.1.bb do_fetch
-./meta-loongarch/build.sh openembedded-core/meta/recipes-kernel/linux/linux-yocto_6.1.bb:do_kernel_version_sanity_check
+./build.sh openembedded-core/meta/recipes-kernel/linux/linux-yocto_6.1.bb
+./build.sh openembedded-core/meta/recipes-kernel/linux/linux-yocto_6.1.bb do_fetch
+./build.sh openembedded-core/meta/recipes-kernel/linux/linux-yocto_6.1.bb:do_kernel_version_sanity_check
 ```
-
-## 提示
-
-qemu-system-longarch64需要bios。目前，edk2-loongarch提供了它的二进制代码。未来应更改为从上游拉取生成。Poky有ovmf配方，但目前还不支持loongarch。
