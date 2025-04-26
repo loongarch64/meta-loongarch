@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<manifest>
+  <remote name="openembedded" fetch="https://github.com/openembedded/" />
+  <remote name="yocto" fetch="https://github.com/yoctoproject/" />
+  <remote name="loongarch" fetch="https://github.com/loongarch64/" />
+  <default remote="openembedded" revision="master" />
+
+  <project name="meta-loongarch" remote="loongarch" path="meta-loongarch" revision="master">
+      <linkfile dest="build.sh" src="build.sh"/>
+  </project>
+  <project name="poky" remote="yocto" path="poky" revision="master" />
+  <project name="meta-openembedded" remote="openembedded" path="meta-openembedded" revision="master" />
+</manifest>
