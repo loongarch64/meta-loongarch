@@ -1,0 +1,36 @@
+Upstream-Status: Pending
+diff --git a/Configurations/10-main.conf b/Configurations/10-main.conf
+index 0baa0a4..8801a2d 100644
+--- a/Configurations/10-main.conf
++++ b/Configurations/10-main.conf
+@@ -837,6 +837,18 @@ my %targets = (
+         lib_cppflags     => add("-DL_ENDIAN"),
+     },
+ 
++    # loongarch64
++    "linux-loongarch64" => {
++        inherit_from     => [ "linux-generic64"],
++        perlasm_scheme   => "linux64",
++    },
++
++    # loongarch64
++    "linux64-loongarch64" => {
++        inherit_from     => [ "linux-generic64"],
++        perlasm_scheme   => "linux64",
++    },
++
+     #### IA-32 targets...
+     #### These two targets are a bit aged and are to be used on older Linux
+     #### machines where gcc doesn't understand -m32 and -m64
+diff --git a/util/perl/OpenSSL/config.pm b/util/perl/OpenSSL/config.pm
+index 5da9282..fcf1385 100755
+--- a/util/perl/OpenSSL/config.pm
++++ b/util/perl/OpenSSL/config.pm
+@@ -721,6 +721,7 @@ EOF
+       ],
+       [ '.*86-.*-linux1',         { target => "linux-aout" } ],
+       [ 'riscv64-.*-linux.',      { target => "linux64-riscv64" } ],
++      [ 'loongarch64-.*-linux.',  { target => "linux64-loongarch64" } ],
+       [ '.*-.*-linux.',           { target => "linux-generic32" } ],
+       [ 'sun4[uv].*-.*-solaris2',
+         sub {
